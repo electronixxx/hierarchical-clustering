@@ -1,2 +1,3 @@
-# hierarchical-clustering
-Hierarchical Agglomerative Clustering Implementation in C++
+# Hierarchical Clustering Implementation
+## High Performance Computing 2022
+Single Linkage Hierarchical Clustering Implementation in C++
