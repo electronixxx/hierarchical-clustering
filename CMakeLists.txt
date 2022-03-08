@@ -4,4 +4,6 @@ project(hierarchical_clustering)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(hierarchical_clustering
-        src/main.cpp)
+        src/main.cpp
+        src/single_threaded_clustering.cpp
+        src/multi_threaded_clustering.cpp)
