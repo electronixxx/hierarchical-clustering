@@ -6,6 +6,7 @@
 #include <limits>
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
 using namespace std;
 using Features = std::vector<float>;
@@ -98,13 +99,41 @@ void singleLinkageClustering(const std::vector<Point>& data) {
 
 
 int main() {
-    std::vector<std::vector<float>> data = {
-            {1.0, 1.0},
-            {1.5, 1.5},
-            {5.0, 5.0},
-            {3.0, 4.0},
-            {4.0, 4.0},
-            {3.0, 3.5},
-    };
+    ifstream infile("input.txt");
+    if (!infile) {
+        cout << "No input file present." << endl;
+        return -1;
+    }
+    std::vector<std::vector<float>> data;
+
+    std::string line;
+
+    while (std::getline(infile, line)) {
+        data.emplace_back();
+
+        // Break down the row into column values
+        std::stringstream split(line);
+        //std::cout << line;
+        float value;
+
+        while (split >> value)
+            data.back().push_back(value);
+    }
+//    for (int i = 0; i < data.size(); i++) {
+//        for (int j = 0; j < data[i].size(); j++)
+//            std::cout << data[i][j] << " ";
+//        std::cout << '\n';
+//    }
+    //return 0;
+
+
+//    std::vector<std::vector<float>> data = {
+//            {1.0, 1.0},
+//            {1.5, 1.5},
+//            {5.0, 5.0},
+//            {3.0, 4.0},
+//            {4.0, 4.0},
+//            {3.0, 3.5},
+//    };
     singleLinkageClustering(data);
 }
