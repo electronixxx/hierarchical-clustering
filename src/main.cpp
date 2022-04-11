@@ -7,6 +7,8 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <map>
+#include <chrono>
 
 using namespace std;
 using Features = std::vector<float>;
@@ -44,30 +46,57 @@ void printMatrix(std::vector<std::vector<float>>& matrix) {
     std::cout << "\n";
 }
 
-void singleLinkageClustering(const std::vector<Point>& data) {
+void singleLinkageClustering(const std::vector<Point>& data, bool parallelize, bool show_output) {
     std::vector<std::vector<float>> distance;
-    // compute the distance matrix
-    for(int i=0; i<data.size(); i++) {
-        std::vector<float> current_row;
-        current_row.reserve(i+1);
-        for(int j=0; j<=i; j++)
-            current_row.push_back(euclideanDistance(data[i], data[j]));
-        distance.push_back(current_row);
+    std::map<int, string> CL; // stores the pairs of clusters
+
+    #pragma omp parallel if(parallelize) num_threads(10)
+    {
+        // compute the distance matrix
+        for (int i = 0; i < data.size(); i++) {
+            std::vector<float> current_row;
+            current_row.reserve(i + 1);
+            for (int j = 0; j <= i; j++)
+                current_row.push_back(euclideanDistance(data[i], data[j]));
+            distance.push_back(current_row);
+        }
     }
 
-    cout << "Initial Distance Matrix: \n";
-    printMatrix(distance);
+
+    if (show_output) {
+        cout << "Initial Distance Matrix: \n";
+        printMatrix(distance);
+    }
+
     size_t iterations = distance.size();
+
+    // initial clusters = point IDs
+    // clusters.reserve(data.size());
+    for(int i=0; i<data.size(); i++) {
+        std::stringstream ss;
+        ss << 'P' << i;
+        CL[i] = ss.str();
+        //clusters.push_back(std::unique_ptr<Cluster>(new Number(i)) );
+    }
 
     // continuously find the min until matrix reduction to 0x0
     for(int iter=0; iter<iterations-1; iter++) {
-        // find global current min (lower triangle)
+        // find current global min (of the lower triangle)
         std::tuple<int, int, float> m = distanceMin(distance);
         int i = std::get<0>(m);
         int j = std::get<1>(m);
         float val = std::get<2>(m);
 
-        cout << "Cluster: [P" << i << ", P" << j << "] -> Distance: " << val  << "\n";
+        std::stringstream ss; // new formed cluster (composition of two clusters)
+        ss << '(' << CL[i]<< ", " << CL[j] << ")";
+        CL[std::min(i, j)] = ss.str();
+
+        for (int g=i; g < distance.size(); g++)
+            CL[g] = CL[g+1];
+
+        CL.erase (CL.find ((int) CL.size() - 1));
+
+        if (show_output) cout << "Cluster: " << ss.str() << " -> Distance: " << val  << "\n\n";
 
         std::vector<float> respectiveDistances; // distances from the new cluster to all the others
         // recompute distances
@@ -93,47 +122,39 @@ void singleLinkageClustering(const std::vector<Point>& data) {
         for(int z=0; z<j; z++)
             distance[j][z] = respectiveDistances[c++];
 
-        //printMatrix(distance);
     }
 }
 
-
 int main() {
+    std::vector<std::vector<float>> data; // input matrix
+
+    /* Input from File */
     ifstream infile("input.txt");
     if (!infile) {
         cout << "No input file present." << endl;
         return -1;
     }
-    std::vector<std::vector<float>> data;
-
     std::string line;
-
     while (std::getline(infile, line)) {
         data.emplace_back();
-
-        // Break down the row into column values
-        std::stringstream split(line);
-        //std::cout << line;
+        std::stringstream split(line); // Break down the row into column values
         float value;
-
         while (split >> value)
             data.back().push_back(value);
     }
-//    for (int i = 0; i < data.size(); i++) {
-//        for (int j = 0; j < data[i].size(); j++)
-//            std::cout << data[i][j] << " ";
-//        std::cout << '\n';
-//    }
-    //return 0;
 
-
-//    std::vector<std::vector<float>> data = {
-//            {1.0, 1.0},
-//            {1.5, 1.5},
-//            {5.0, 5.0},
-//            {3.0, 4.0},
-//            {4.0, 4.0},
-//            {3.0, 3.5},
+    /* Hard Coded Input */
+//    data = {
+//        {1.0, 1.0},
+//        {1.5, 1.5},
+//        {5.0, 5.0},
+//        {3.0, 4.0},
+//        {4.0, 4.0},
+//        {3.0, 3.5},
 //    };
-    singleLinkageClustering(data);
+
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    singleLinkageClustering(data, false, true);
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cout << "Single Linkage execution time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " [µs]" << std::endl;
 }
