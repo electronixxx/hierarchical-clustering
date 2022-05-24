@@ -93,14 +93,14 @@ Since the value of $M$ is a shared value and continously modified and read by va
 
 I tried to parallelize instructions from the original algorithm, but I saw no big performance improvements. After some reseaarch I found out another algorithm for Parallel clustering (shown below). I tried to implement it in C++ but I wasn't able to fully implement it. It is based on a divide and conquer approach which divides the dataset into pieces and merges them using algorithm `3` after using a modified SLINK version (`2`). 
 
-![image info](../attachments/shrink.jpg)
+![image info](./attachments/shrink.jpg)
 
 
 
 ### Dependency Graph
 The reason why the sequential algorithm can't be fully parallelized is because all the iterations are dependent on all the previous iterations, which makes the parallelization not possible. The dependency graph is shown below, where we can see a critical path long `n` (number of points).
 
-![image info](../attachments/dependencies.jpg)
+![image info](./attachments/dependencies.jpg)
 
 
 ### Parallelization of other instructions
@@ -170,14 +170,14 @@ The below result is from a dataset with 1000/2000/100/200 points each with 10/10
 
 ## Comparison with various Threads - SLINK
 
-![image info](../attachments/000005.png)
+![image info](./attachments/000005.png)
 
 First of all we can notice the performance of SLINK ($O(n^2)$) against the General Single Linkage ($O(n^3)$).
 Since the test was done on an intel CPU with 4 physical cores, and since parallel threads dont do any wait, I was expecting to get the optimal execution time at 4 threads. This expected result matches with the testing. The parallel SLINK operates better at 4 threads. If we start increasing the number of threads, it wont further improve, but will start losing performance caused by overheads of thread creation. For a dataset of 1000 points with 10 features, we can see that the parallel solution works 3 times better. I expect the complexity to go $O(n^2/4)$ (almost, since not everything is parallelized) when using 4 threads. 
 
 ## Comparison with various Threads - General Single Linkage
 
-![image info](../attachments/000007.png)
+![image info](./attachments/000007.png)
 
 For the General Single Linkage, the results were a bit unexpected, because we can see that its very unstable and operates bettwe with a big number of threads. When we use 32 threads, it will start drastically decresing the performance. So the optimal number of threads is 8 or 16 for my parallel single linkage.
 
