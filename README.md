@@ -10,7 +10,7 @@ Ca' Foscari Univeristy of Venice 2022
 Masters in Software Dependability and Cyber Security
 
 ## Table of contents
-* Overview
+* [Overview](#Overview)
 * General Single Linkage Algorithm
 * SLINK Algorithm
 * Optimization techniques
