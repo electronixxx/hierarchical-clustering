@@ -10,21 +10,20 @@ Ca' Foscari Univeristy of Venice 2022
 Masters in Software Dependability and Cyber Security
 
 ## Table of contents
-* [Overview](#Overview)
-* General Single Linkage Algorithm
-* SLINK Algorithm
-* Optimization techniques
-  * Initial problems, strategies and limitations
-  * Optimal data layouts (distance matrix)
-  * Possible Multithreading Approaches
-  * Dependency Graph
-  * SIMD Vectorization
-  * Compilation flags
-* Results
-  * Comparison with various Threads - SLINK
-  * Comparison with various Threads - General Single Linkage
-  * Speedup
-  * Further Optimizations
+* [Overview](#overview)
+* [General Single Linkage Algorithm](#general-single-linkage-algorithm) 
+* [SLINK Algorithm](#slink-algorithm)
+* [Optimization Techniques](#optimization-techniques)
+  * [Initial problems, strategies and limitations](#initial-problems-strategies-and-limitations)
+  * [Optimal data layouts](#optimal-data-layouts)
+  * [Possible Multithreading Approaches](#possible-multithreading-approaches)
+  * [Dependency Graph](#dependency-graph)
+  * [SIMD Vectorization](#simd-vectorization)
+  * [Compilation flags](#compilation-flags)
+* [Results](#results)
+  * [Comparison with various Threads - SLINK](#comparison-with-various-threads---slink)
+  * [Comparison with various Threads - General Single Linkage](#comparison-with-various-threads---general-single-linkage)
+  * [Speedup](#speedup)
 
 # Overview
 Clustering is an unsupervised classification task (no classes known in advance). After clustering, we can consider a cluster as a class. In this project, I have implemented two algorithms used for hierarchical clustering. The first one is called General Linkage Clustering and runs in $O(N^3)$ time complexity, and $O(N^2 + overhead)$ space complexity. This is a more intuitive and simple algorithms, but there exists a better algorithm called SLINK, which has $O(N^2)$ time and $O(3N)$ space complexity. Both these algorithms as input need a distance matrix, which represents the distances between each two points of the input data. In order to calculate this matrix, we can use the Euclidean Distance which runs in $O(M*NlogN)$ to calculate the distances among all N points of M features each. Important to note is that for performance purposes, we can take only the bottom diagonal part of the matrix, because it will be a symmetric matrix on the main diagonal.
