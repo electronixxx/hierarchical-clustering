@@ -27,29 +27,29 @@ static float euclideanDistance(Features p1, Features p2) {
 }
 
 // calculates the distance matrix from a vector of Object PointsWW
-void calculateDistanceMatrix(unsigned long const nr_objects, const vector<Point>& data, vector<vector<float>>& distance) {
+void calculateDistanceMatrix(unsigned long const nr_objects, const vector<Point>& data, vector<vector<float>>& distance, int nr_threads) {
     // allocate the necessary memory for a triangular matrix
     distance = vector<vector<float>>(nr_objects);
-    #pragma omp parallel for schedule(dynamic) shared(nr_objects, distance) default(none)
+    #pragma omp parallel for num_threads(nr_threads) schedule(dynamic) shared(nr_objects, distance) default(none)
     for (int i=0; i<nr_objects; i++)
         distance[i] = vector<float>(i+1);
 
-    #pragma omp parallel for num_threads(1) schedule(dynamic) shared(data, distance) default(none)
+    #pragma omp parallel for num_threads(nr_threads) schedule(dynamic) shared(data, distance, nr_threads) default(none)
     for (int i = 0; i < data.size(); i++)
-        #pragma omp parallel for num_threads(1) schedule(dynamic) shared(i, data, distance) default(none)
+        #pragma omp parallel for num_threads(nr_threads) schedule(dynamic) shared(i, data, distance) default(none)
         for (int j = 0; j <= i; j++)
             distance[i][j] = euclideanDistance(data[i], data[j]); // compute distance for each point
 }
 
 // finds the minimum distance from all current distances and returns the position with the value
-tuple<int, int, float> findMinDistance(vector<vector<float>>& distance) {
+tuple<int, int, float> findMinDistance(vector<vector<float>>& distance, int nr_threads) {
     const float inf = numeric_limits<float>::infinity();
 
     float val = inf;
     int index_i = 0;
     int index_j = 0;
 
-    #pragma omp parallel for num_threads(1) reduction(min:val) shared(distance, index_i, index_j) default (none)
+    #pragma omp parallel for num_threads(nr_threads) reduction(min:val) shared(distance, index_i, index_j) default (none)
     for(int i=1; i<distance.size(); i++) {
         for(int j=0; j<distance[i].size()-1; j++) {
             #pragma omp critical

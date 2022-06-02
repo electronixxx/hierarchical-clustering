@@ -10,7 +10,7 @@ using namespace std;
 using Features = std::vector<float>;
 using Point = std::vector<float>;
 
-void GeneralSingleLinkage(vector<vector<float>> &distance, bool show_output) {
+void GeneralSingleLinkage(vector<vector<float>> &distance, bool show_output, int nr_threads) {
     const unsigned long int nr_points = distance.size();
     map<int, string> CL; // stores the pairs of clusters
 
@@ -25,7 +25,7 @@ void GeneralSingleLinkage(vector<vector<float>> &distance, bool show_output) {
     // continuously find the min until matrix reduction to 0x0
     for(int iter=0; iter<nr_points-1; iter++) {
         // find current global min (of the lower triangle)
-        tuple<int, int, float> m = findMinDistance(distance);
+        tuple<int, int, float> m = findMinDistance(distance, nr_threads);
         int i = get<0>(m);
         int j = get<1>(m);
         float val = get<2>(m);
@@ -67,4 +67,4 @@ void GeneralSingleLinkage(vector<vector<float>> &distance, bool show_output) {
             distance[j][z] = respectiveDistances[c++];
 
     }
-};
+}

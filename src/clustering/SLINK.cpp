@@ -5,14 +5,14 @@
 using namespace std;
 using Point = vector<float>;
 
-void SLINK(vector<vector<float>>& distance, bool show_output) {
+void SLINK(vector<vector<float>>& distance, bool show_output, int nr_threads) {
     const float inf = numeric_limits<float>::infinity();
     const unsigned long int nr_points = distance.size();
     vector<int> pi(nr_points);
     vector<float> lambda(nr_points);
 
     // 1. & 2.
-    #pragma omp parallel for simd num_threads(1) schedule(dynamic) shared(nr_points, pi, lambda, inf) default(none)
+    #pragma omp parallel for simd num_threads(nr_threads) schedule(dynamic) shared(nr_points, pi, lambda, inf) default(none)
     for (int n = 0; n < nr_points; n++) {
         pi[n] = n;
         lambda[n] = inf;
@@ -33,7 +33,7 @@ void SLINK(vector<vector<float>>& distance, bool show_output) {
         }
 
         // 4.
-        #pragma omp parallel for simd num_threads(1) if (n>20) schedule(dynamic) shared(lambda, pi, n) default(none)
+        #pragma omp parallel for simd num_threads(nr_threads) if (n>20) schedule(dynamic) shared(lambda, pi, n) default(none)
         for (int i=0; i<n; i++) {
             if (lambda[i] >= lambda[pi[i]])
                 pi[i] = n;
