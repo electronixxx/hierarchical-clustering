@@ -5,11 +5,9 @@
 #include "clustering/ClusteringAlgorithms.h"
 #include "utils/utilities.h"
 
-int nr_threads = 4;
-
 int main() {
     using namespace std;
-    int nr_threads = 1;
+    int nr_threads;
     FloatMatrix data = {};
 
     /* Input from File */
