@@ -2,6 +2,7 @@
 #include <tuple>
 #include <iostream>
 #include <map>
+#include <sstream>
 
 #include "../utils/utilities.h"
 
@@ -14,7 +15,7 @@ void GeneralSingleLinkage(vector<vector<float>> &distance, bool show_output) {
     map<int, string> CL; // stores the pairs of clusters
 
     // initial clusters = point IDs
-    //#pragma omp parallel for if(parallelize) shared(data, CL), default(none)
+    //#pragma omp parallel for shared(distance, CL), default(none)
     for(int i=0; i<distance.size(); i++) {
         stringstream ss;
         ss << 'P' << i;
@@ -52,6 +53,7 @@ void GeneralSingleLinkage(vector<vector<float>> &distance, bool show_output) {
         }
 
         // del col i
+        #pragma omp parallel for shared(distance, i), default(none)
         for(int c=i; c<distance.size(); c++)
             distance[c].erase(distance[c].begin() + i);
         // del row i

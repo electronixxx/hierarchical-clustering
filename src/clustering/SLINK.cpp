@@ -11,23 +11,14 @@ void SLINK(vector<vector<float>>& distance, bool show_output) {
     vector<int> pi(nr_points);
     vector<float> lambda(nr_points);
 
+    // 1. & 2.
     #pragma omp parallel for simd num_threads(1) schedule(dynamic) shared(nr_points, pi, lambda, inf) default(none)
     for (int n = 0; n < nr_points; n++) {
         pi[n] = n;
         lambda[n] = inf;
     }
 
-    for (int n = 0; n < nr_points; n++) {
-        //vector<float> M(n);
-//
-//        // 1.
-//        pi[n] = n;
-//        lambda[n] = inf;
-        // 2.
-        //#pragma omp parallel for simd schedule(dynamic) shared(distance, M, n) default(none)
-//        for (int i=0; i<n; i++)
-//            M[i] = distance[n][i];
-
+    for (int n=0; n<nr_points; n++) {
         // 3.
         #pragma omp simd
         for (int i=0; i<n; i++) {

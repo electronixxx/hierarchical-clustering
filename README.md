@@ -187,4 +187,4 @@ For the General Single Linkage, the results were a bit unexpected, because we ca
 
 The speedup is given as $S = T_s / T_p$ where $T_s$ is the execution time of the best sequential algorithm.
 If we take the results of the 1000 objects, we obtain a speedup of $S = 3$ for 4 threads, which is not the best one since there are other parallel algorithms with better speedup. 
-To calculate the efficiency, we use $E = S / p$, and in out case, it is $ 75\% $ since we have are using 4 cores simultaneously. 
+To calculate the efficiency, we use $E = S / p$, and in out case, it is $3/4$ since we have are using 4 cores simultaneously. 
