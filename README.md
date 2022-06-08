@@ -124,7 +124,6 @@ I applied this idea to the Euclidean distance function. Below are the handcrafte
 static float euclideanDistance(Features p1, Features p2) {
     assert(p1.size() == p2.size());
     const unsigned long size = p1.size();
-    float result;
     __m512 m_sums = _mm512_setzero();
     for (int i = 0; i < size; i+=(512/32)) { // loop through all the features of the point
         __m512 m_p2 = _mm512_loadu_ps(&p2[i]);
@@ -133,9 +132,12 @@ static float euclideanDistance(Features p1, Features p2) {
         __m512 power = _mm512_pow_ps(m_diff, _mm512_set1_pd(2));
         m_sums = _mm512_add_ps(m_sums, power);
     }
-    __m512 m_sqrt = _mm512_sqrt_ps(m_sums);
-    _mm512_storeu_ps(&result, m_sqrt);
-    return result;
+    float partial_results[512/32](0.);
+    float result(0.);
+    _mm512_storeu_ps(&partial_results[0], m_sums);
+    for (int i = 0; i < 512/32; i+=1)
+        result += partial_results[i];
+    return sqrtf(result);
 }
 ```
 
