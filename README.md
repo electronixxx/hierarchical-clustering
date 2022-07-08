@@ -98,11 +98,6 @@ Since the value of $M$ is a shared value and continuously modified and read by v
   * Using flush
   To synchronize the memory value of $M$, another approach is using the `flush` directive of OpenMP, but the problem was another one. Since I make use of SIMD instructions on the for loop, OpenMP gives error if you use OpenMP constructs inside blocked marked as SIMD vectorized. I had two options, either remove the SIMD or remove the flush. The SIMD is very useful, and I had to chose it instead of the flush, which still would have caused overheads, probably.
 
-I tried to parallelize instructions from the original algorithm, but I saw no big performance improvements. After some research I found out another algorithm for Parallel clustering (shown below). I tried to implement it in C++ but I wasn't able to fully implement it. It is based on a divide and conquer approach which divides the dataset into pieces and merges them using algorithm `3` after using a modified SLINK version (`2`).
-I managed to get access to the paper which describes it by contacting the authors, and they gave me the PDF format of the paper, which I may take in consideration for further improvements.
-
-![Improved SLINK (SHRINK)](attachments/shrink.jpg)
-
 ### Dependency Graph
 The reason why the sequential algorithm can't be fully parallelized is because, an iteration is dependent on all the previous iterations, which makes the parallelization not possible. The dependency graph is shown below, where we can see a critical path long `n` (number of points).
 
